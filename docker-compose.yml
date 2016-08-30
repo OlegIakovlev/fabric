@@ -1,10 +1,10 @@
 membersrvc:
-  image: hyperledger/fabric-membersrvc
+  image: hyperledger/fabric-membersrvc:master-3832045
   ports:
     - "7054:7054"
   command: membersrvc
 vp0:
-  image: hyperledger/fabric-peer
+  image: hyperledger/fabric-peer:master-3832045
   ports:
     - "5050:7050"
   environment:
@@ -16,7 +16,7 @@ vp0:
     - membersrvc
   command: sh -c "sleep 5; peer node start --peer-chaincodedev"
 vp1:
-  image: hyperledger/fabric-peer
+  image: hyperledger/fabric-peer:master-3832045
   environment:
     - CORE_PEER_ID=vp1
     - CORE_PEER_ADDRESSAUTODETECT=true
