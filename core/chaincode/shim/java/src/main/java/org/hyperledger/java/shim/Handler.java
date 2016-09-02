@@ -312,6 +312,9 @@ public class Handler {
 				ByteString response;
 				try {
 					response = chaincode.runHelper(stub, getFunction(input.getArgsList()), getParameters(input.getArgsList()));
+//					if(!response.isEmpty()){
+//						throw new RuntimeException(response.toString());
+//					}
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.err.flush();
@@ -494,6 +497,7 @@ public class Handler {
 					.setTxid(uuid)
 					.build();
 
+			System.out.println(String.format("[%s]Sending %s", shortID(message), GET_STATE));
 			logger.debug(String.format("[%s]Sending %s", shortID(message), GET_STATE));
 			try {
 				serialSend(message);
@@ -588,6 +592,7 @@ public class Handler {
 
 			// Success response
 			if (response.getType() == RESPONSE) {
+				System.out.println(String.format("[%s]Received %s. Successfully updated state", shortID(response.getTxid()), RESPONSE));
 				logger.debug(String.format("[%s]Received %s. Successfully updated state", shortID(response.getTxid()), RESPONSE));
 				return;
 			}

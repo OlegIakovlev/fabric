@@ -39,7 +39,7 @@ public class SimpleSample extends ChaincodeBase {
 			init(stub, function, args);
 			break;
 		case "transfer":
-			String re = transfer(stub, args);	
+			String re = transfer(stub, args);
 			System.out.println(re);
 			return re;					
 		case "put":
@@ -58,10 +58,10 @@ public class SimpleSample extends ChaincodeBase {
 	}
 
 	private String  transfer(ChaincodeStub stub, String[] args) {
-		System.out.println("in transfer");
+		log.info("in transfer SimpleSample!");
 		if(args.length!=3){
-			System.out.println("Incorrect number of arguments:"+args.length);
-			return "{\"Error\":\"Incorrect number of arguments. Expecting 3: from, to, amount\"}";
+			log.warn("Incorrect number of arguments:"+args.length);
+			throw new RuntimeException("{\"Error\":\"Incorrect number of arguments. Expecting 3: from, to, amount\"}");
 		}
 		String fromName =args[0];
 		String fromAm=stub.getState(fromName);
@@ -73,11 +73,11 @@ public class SimpleSample extends ChaincodeBase {
 			try{
 				valFrom = Integer.parseInt(fromAm);
 			}catch(NumberFormatException e ){
-				System.out.println("{\"Error\":\"Expecting integer value for asset holding of "+fromName+" \"}"+e);		
-				return "{\"Error\":\"Expecting integer value for asset holding of "+fromName+" \"}";		
+				log.warn("{\"Error\":\"Expecting integer value for asset holding of "+fromName+" \"}"+e);
+				throw new RuntimeException("{\"Error\":\"Expecting integer value for asset holding of "+fromName+" \"}");
 			}		
 		}else{
-			return "{\"Error\":\"Failed to get state for " +fromName + "\"}";
+			throw new RuntimeException("{\"Error\":\"Failed to get state for " +fromName + "\"}");
 		}
 
 		int valTo=0;
@@ -85,29 +85,32 @@ public class SimpleSample extends ChaincodeBase {
 			try{
 				valTo = Integer.parseInt(toAm);
 			}catch(NumberFormatException e ){
-				e.printStackTrace();
-				return "{\"Error\":\"Expecting integer value for asset holding of "+toName+" \"}";		
+				log.warn("toAm: "+toAm, e);
+				throw new RuntimeException("{\"Error\":\"Expecting integer value for asset holding of "+toName+" \"}");
 			}		
 		}else{
-			return "{\"Error\":\"Failed to get state for " +toName + "\"}";
+			throw new RuntimeException("{\"Error\":\"Failed to get state for " +toName + "\"}");
 		}
 		
 		int valA =0;
 		try{
 			valA = Integer.parseInt(am);
 		}catch(NumberFormatException e ){
-			e.printStackTrace();
-			return "{\"Error\":\"Expecting integer value for amount \"}";
+			log.warn("am: "+am, e);
+			throw new RuntimeException("{\"Error\":\"Expecting integer value for amount \"}");
 		}		
-		if(valA>valFrom)
-			return "{\"Error\":\"Insufficient asset holding value for requested transfer amount \"}";
+		if(valA>valFrom){
+			log.warn("{\"Error\":\"Insufficient asset holding value for requested transfer amount \"}");
+			throw new RuntimeException("{\"Error\":\"Insufficient asset holding value for requested transfer amount \"}");
+		}
+
 		valFrom = valFrom-valA;
 		valTo = valTo+valA;
-		System.out.println("Transfer "+fromName+">"+toName+" am='"+am+"' new values='"+valFrom+"','"+ valTo+"'");
+		log.info("Transfer "+fromName+">"+toName+" am='"+am+"' new values='"+valFrom+"','"+ valTo+"'");
 		stub.putState(fromName,""+ valFrom);
-		stub.putState(toName, ""+valTo);		
+		stub.putState(toName, ""+valTo);
 
-		System.out.println("Transfer complete");
+		log.info("Transfer complete");
 
 		return null;
 		
@@ -115,6 +118,7 @@ public class SimpleSample extends ChaincodeBase {
 
 	public String init(ChaincodeStub stub, String function, String[] args) {
 		if(args.length!=4){
+			System.err.println("{\"Error\":\"Incorrect number of arguments. Expecting 4\"}");
 			return "{\"Error\":\"Incorrect number of arguments. Expecting 4\"}";
 		}
 		try{

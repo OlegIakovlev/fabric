@@ -7,24 +7,25 @@ vp0:
   image: hyperledger/fabric-peer:master-3832045
   ports:
     - "5050:7050"
+    - "7051:7051"
   environment:
     - CORE_PEER_ID=vp0
     - CORE_PEER_ADDRESSAUTODETECT=true
     - CORE_VM_ENDPOINT=http://172.17.0.1:2375
-    - CORE_LOGGING_LEVEL=DEBUG
+    - CORE_LOGGING_LEVEL=INFO
   links:
     - membersrvc
-  command: sh -c "sleep 5; peer node start --peer-chaincodedev"
+  command: sh -c "sleep 5; peer node start"
 vp1:
   image: hyperledger/fabric-peer:master-3832045
   environment:
     - CORE_PEER_ID=vp1
     - CORE_PEER_ADDRESSAUTODETECT=true
     - CORE_VM_ENDPOINT=http://172.17.0.1:2375
-    - CORE_LOGGING_LEVEL=DEBUG
+    - CORE_LOGGING_LEVEL=INFO
     - CORE_PEER_DISCOVERY_ROOTNODE=vp0:7051
   ports:
     - "7050:7050"
   links:
     - vp0
-  command: sh -c "sleep 5; peer node start --peer-chaincodedev"  
+  command: sh -c "sleep 5; peer node start"
